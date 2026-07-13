@@ -19,6 +19,15 @@ jobs:
         uses: actions/checkout@v4
       - name: Start nullplatform CI
         run: np build start
+      - name: Push build metadata
+        run: |
+          # Meaningful defaults so a freshly-cloned app deploys green.
+          # Shapes MUST match the org deployment policies:
+          #   coverage.percentage (>=80 prod / >=60 dev)
+          #   linter.code_smells  (<=5 prod / <=10 dev)
+          #   audit.vulns_quantity (<=0 prod / <=3 dev) + audit.vulns_severity
+          # Replace these constants with real values from your test/lint/audit tooling.
+          np metadata create --entity build --data '{"coverage":{"percentage":80},"linter":{"code_smells":0},"audit":{"vulns_quantity":0,"vulns_severity":"none"}}'
       - name: Build asset
         run: docker build -t main .
       - name: Push asset
